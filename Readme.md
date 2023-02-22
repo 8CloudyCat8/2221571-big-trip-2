@@ -1,7 +1,7 @@
 # Проект «Большое путешествие»
 
 * Студент: [Евгений Матвеев](https://up.htmlacademy.ru/univer-js2/2/user/2221571).
-* Наставник: `Неизвестно`.
+* Наставник: [Евгений Лепёшкин](https://htmlacademy.ru/profile/spearance).
 
 ---
 
