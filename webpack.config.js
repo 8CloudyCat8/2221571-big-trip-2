@@ -4,6 +4,8 @@ const CopyPlugin = require('copy-webpack-plugin'); // плагин для коп
 
 // Экспорт конфигурации webpack
 module.exports = {
+    // режим разработки
+    mode: 'development',
     // Точка входа для сборки
     entry: './src/main.js',
     // Настройка выходного файла
@@ -30,7 +32,7 @@ module.exports = {
             {
                 test: /.js$/, // загружаем только файлы с расширением .js
                 exclude: /(node_modules)/, // исключаем папку node_modules
-                use: ['babel loader'] // используем babel для транспиляции кода
+                use: ['babel-loader'] // используем babel для транспиляции кода
             },
             // Загрузчик для CSS файлов
             {
