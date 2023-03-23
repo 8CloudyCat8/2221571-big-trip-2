@@ -1,13 +1,27 @@
-import { generateRoutePoint } from '../mock/route-point.js';
+export default class PointsModel {
+  #points = null;
+  #destinations = null;
+  #offers = null;
 
-const ROUTE_POINTS_COUNT = 20;
-
-export default class RoutePointsModel {
   constructor() {
-    this.routePoints = new Array(ROUTE_POINTS_COUNT).fill().map((value, index) => generateRoutePoint(index + 1));
+    this.#points = [];
   }
 
-  getRoutePoints() {
-    return this.routePoints;
+  init(points, destinations, offers) {
+    this.#points = points;
+    this.#destinations = destinations;
+    this.#offers = offers;
+  }
+
+  get points() {
+    return this.#points;
+  }
+
+  get destinations() {
+    return this.#destinations;
+  }
+
+  get offers() {
+    return this.#offers;
   }
 }

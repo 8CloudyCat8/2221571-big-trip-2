@@ -8,20 +8,21 @@ const createSiteMenuTemplate = () => (
 );
 
 export default class SiteMenuView {
-  constructor() {
-    this.element = null;
+  #element = null;
+
+  get template () {
+    return createSiteMenuTemplate();
   }
 
-  getTemplate() {
-    return createSiteMenuTemplate;
-  }
+  get element() {
+    if (!this.#element){
+      this.#element = createElement(this.template);
+    }
 
-  getElement() {
-    this.element = this.element || createElement(this.getTemplate());
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }

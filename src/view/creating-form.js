@@ -165,20 +165,19 @@ const createCreatingFormTemplate = () =>
 </li>`;
 
 export default class CreatingFormView {
-  constructor() {
-    this.element = null;
-  }
+  #element = null;
 
-  getTemplate() {
-    return createCreatingFormTemplate();
+  get template() {
+    return createCreatingFormTemplate;
   }
 
   getElement() {
-    this.element = this.element || createElement(this.getTemplate());
-    return this.element;
+    this.#element = this.#element || createElement(this.template);
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }
+
