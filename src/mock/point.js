@@ -1,4 +1,4 @@
-import { getRandomInteger, getRandomElement } from '../utils.js';
+import { getRandomInteger, getRandomElement } from '../utils/common.js';
 import dayjs from 'dayjs';
 
 const POINTS_COUNT = 20;
@@ -18,9 +18,9 @@ const DESCRIPTIONS = ['Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
   'In rutrum ac purus sit amet tempus.'
 ];
 
-const Price = { MIN: 100, MAX: 1000 };
 const ElementsCount = { MIN: 1, MAX: 4 };
 const PictureNumber = { MIN: 0, MAX: 10 };
+const Price = { MIN: 100, MAX: 1000 };
 
 const generateDescription = () => {
   let description = '';
