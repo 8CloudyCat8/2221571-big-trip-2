@@ -3,7 +3,7 @@ import AbstractView from './abstract-view.js';
 /**
  * Абстрактный класс представления с состоянием
  */
-export default class AbstractStatefulView extends AbstractView {
+export default class StatefulRenderableView extends AbstractView {
   /** @type {Object} Объект состояния */
   _state = {};
 
@@ -25,8 +25,8 @@ export default class AbstractStatefulView extends AbstractView {
    * Метод для восстановления обработчиков после перерисовки элемента
    * @abstract
    */
-  _restoreHandlers() {
-    throw new Error('Abstract method not implemented: restoreHandlers');
+  _resetHandlers() {
+    throw new Error('Abstract method not implemented: resetHandlers');
   }
 
   /**
@@ -47,6 +47,6 @@ export default class AbstractStatefulView extends AbstractView {
 
     parent.replaceChild(newElement, prevElement);
 
-    this._restoreHandlers();
+    this._resetHandlers();
   }
 }

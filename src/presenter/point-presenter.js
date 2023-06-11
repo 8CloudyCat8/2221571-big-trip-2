@@ -1,116 +1,117 @@
 import { render, replace, remove } from '../framework/render.js';
-import PreviewPointView from '../view/preview-point.js';
-import EditingPointView from '../view/editing-point.js';
+import EditingPointView from '../view/editing.js';
+import PreviewPointView from '../view/preview.js';
 
 const Mode = {
-  PREVIEW: 'preview',
   EDITING: 'editing',
+  PREVIEW: 'preview',
 };
 
 export default class PointPresenter {
-  #pointListContainer = null;
-  #previewPointComponent = null;
-  #editingPointComponent = null;
-  #pointsModel = null;
-
-  #destinations = null;
+  #currentMode = Mode.PREVIEW;
   #offers = null;
-
-  #changeData = null;
-  #changeMode = null;
-
+  #modifiedData = null;
+  #modifiedMode = null;
   #point = null;
-  #mode = Mode.PREVIEW;
+  #editingPointElement = null;
+  #pointsModel = null;
+  #destinations = null;
+  #pointListContainer = null;
+  #previewPointElement = null;
 
-  constructor(pointListContainer, pointsModel, changeData, changeMode) {
-    this.#pointListContainer = pointListContainer;
-    this.#pointsModel = pointsModel;
-    this.#changeData = changeData;
-    this.#changeMode = changeMode;
+  constructor(container, model, data, currentMode) {
+    this.#pointListContainer = container;
+    this.#pointsModel = model;
+    this.#modifiedData = data;
+    this.#modifiedMode = currentMode;
   }
 
-  init(point) {
-    this.#point = point;
-    this.#destinations = [...this.#pointsModel.destinations];
-    this.#offers = [...this.#pointsModel.offers];
+init(point) {
+  this.#offers = [...this.#pointsModel.offers];
+  this.#point = point;
+  this.#destinations = [...this.#pointsModel.destinations];
 
-    const prevPreviewPointComponent = this.#previewPointComponent;
-    const prevEditingPointComponent =  this.#editingPointComponent;
+  const [prevEditingPointComponent, prevPreviewPointComponent] = [
+    this.#editingPointElement,
+    this.#previewPointElement,
+  ];
 
-    this.#previewPointComponent = new PreviewPointView(point, this.#destinations, this.#offers);
-    this.#editingPointComponent = new EditingPointView(point, this.#destinations, this.#offers);
+  this.#editingPointElement = new EditingPointView(point, this.#destinations, this.#offers);
+  this.#editingPointElement.setupPreviewClickHandler(this.#handlePreviewClick);
+  this.#editingPointElement.setFormSubmitHandler(this.#handleFormSubmit);
 
-    this.#previewPointComponent.setEditClickHandler(this.#handleEditClick);
-    this.#previewPointComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
-    this.#editingPointComponent.setPreviewClickHandler(this.#handlePreviewClick);
-    this.#editingPointComponent.setFormSubmitHandler(this.#handleFormSubmit);
+  this.#previewPointElement = new PreviewPointView(point, this.#destinations, this.#offers);
+  this.#previewPointElement.setEditClickHandler(this.#handleEditClick);
+  this.#previewPointElement.setFavoriteClickHandler(this.#handleBestClick);
 
-    if (prevPreviewPointComponent === null || prevEditingPointComponent === null) {
-      render(this.#previewPointComponent, this.#pointListContainer);
-      return;
-    }
+  render(this.#previewPointElement, this.#pointListContainer);
 
-    switch (this.#mode) {
+  if (prevPreviewPointComponent && prevEditingPointComponent) {
+    switch (this.#currentMode) {
       case Mode.PREVIEW:
-        replace(this.#previewPointComponent, prevPreviewPointComponent);
+        replace(this.#previewPointElement, prevPreviewPointComponent);
         break;
       case Mode.EDITING:
-        replace(this.#editingPointComponent, prevEditingPointComponent);
+        replace(this.#editingPointElement, prevEditingPointComponent);
         break;
     }
-
-    remove(prevPreviewPointComponent);
-    remove(prevEditingPointComponent);
   }
 
-  destroy = () => {
-    remove(this.#previewPointComponent);
-    remove(this.#editingPointComponent);
-  };
+  [prevPreviewPointComponent, prevEditingPointComponent].forEach((component) => {
+    component && remove(component);
+  });
+}
 
   resetView = () => {
-    if (this.#mode !== Mode.PREVIEW) {
-      this.#editingPointComponent.reset(this.#point);
-      this.#replaceEditingPointToPreviewPoint();
+    if (this.#currentMode === Mode.PREVIEW) {
+      return;
     }
+    this.#editingPointElement.reset(this.#point);
+    this.#switchToPreviewPoint();
   };
 
-  #replacePreviewPointToEditingPoint = () => {
-    replace(this.#editingPointComponent, this.#previewPointComponent);
-    document.addEventListener('keydown', this.#escKeyDownHandler);
-    this.#changeMode();
-    this.#mode = Mode.EDITING;
+
+  destroy = () => {
+    remove(this.#previewPointElement);
+    remove(this.#editingPointElement);
   };
 
-  #replaceEditingPointToPreviewPoint = () => {
-    replace(this.#previewPointComponent, this.#editingPointComponent);
-    document.removeEventListener('keydown', this.#escKeyDownHandler);
-    this.#mode = Mode.PREVIEW;
-  };
-
-  #escKeyDownHandler = (evt) => {
-    if (evt.key === 'Escape' || evt.key === 'Esc') {
-      evt.preventDefault();
-      this.#editingPointComponent.reset(this.#point);
-      this.#replaceEditingPointToPreviewPoint();
-    }
-  };
-
-  #handleFavoriteClick = () => {
-    this.#changeData({...this.#point, isFavorite: !this.#point.isFavorite});
+  #handleBestClick = () => {
+    this.#modifiedData({...this.#point, isFavorite: !this.#point.isFavorite});
   };
 
   #handleEditClick = () => {
-    this.#replacePreviewPointToEditingPoint();
+    this.#switchToEditingPoint();
   };
 
   #handlePreviewClick = () => {
-    this.#editingPointComponent.reset(this.#point);
-    this.#replaceEditingPointToPreviewPoint();
+    this.#editingPointElement.reset(this.#point);
+    this.#switchToPreviewPoint();
   };
 
   #handleFormSubmit = (point) => {
-    this.#changeData(point);
-    this.#replaceEditingPointToPreviewPoint();
+    this.#modifiedData(point);
+    this.#switchToPreviewPoint();
+  };
+
+  #switchToEditingPoint = () => {
+    replace(this.#editingPointElement, this.#previewPointElement);
+    document.addEventListener('keydown', this.#keydownEscape);
+    this.#modifiedMode();
+    this.#currentMode = Mode.EDITING;
+  };
+
+  #switchToPreviewPoint = () => {
+    replace(this.#previewPointElement, this.#editingPointElement);
+    document.removeEventListener('keydown', this.#keydownEscape);
+    this.#currentMode = Mode.PREVIEW;
+  };
+
+  #keydownEscape = (evt) => {
+    if (evt.key === 'Escape' || evt.key === 'Esc') {
+      evt.preventDefault();
+      this.#editingPointElement.reset(this.#point);
+      this.#switchToPreviewPoint();
+    }
   };
 }
