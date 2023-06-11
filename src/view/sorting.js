@@ -1,50 +1,53 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { SortType } from '../utils/sorting.js';
+import { SortOption } from '../utils/point-sorting.js';
 
-const createSortingTemplate = () => (
+const generateSortingTemplate = () => (
   `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
-  <div class="trip-sort__item  trip-sort__item--${SortType.DAY}">
-    <input data-sort-type=${SortType.DAY} id="sort-${SortType.DAY}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-${SortType.DAY}" checked>
-    <label class="trip-sort__btn" for="sort-${SortType.DAY}">Day</label>
+  <div class="trip-sort__item  trip-sort__item--${SortOption.DAY}">
+    <input data-sort-type=${SortOption.DAY} id="sort-${SortOption.DAY}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-${SortOption.DAY}" checked>
+    <label class="trip-sort__btn" for="sort-${SortOption.DAY}">Day</label>
   </div>
 
-  <div class="trip-sort__item  trip-sort__item--${SortType.EVENT}">
-    <input data-sort-type=${SortType.EVENT} id="sort-${SortType.EVENT}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-${SortType.EVENT}" disabled>
-    <label class="trip-sort__btn" for="sort-${SortType.EVENT}">Event</label>
+  <div class="trip-sort__item  trip-sort__item--${SortOption.EVENT}">
+    <input data-sort-type=${SortOption.EVENT} id="sort-${SortOption.EVENT}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-${SortOption.EVENT}" disabled>
+    <label class="trip-sort__btn" for="sort-${SortOption.EVENT}">Event</label>
   </div>
 
-  <div class="trip-sort__item  trip-sort__item--${SortType.TIME}">
-    <input data-sort-type=${SortType.TIME} id="sort-${SortType.TIME}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-${SortType.TIME}">
-    <label class="trip-sort__btn" for="sort-${SortType.TIME}">Time</label>
+  <div class="trip-sort__item  trip-sort__item--${SortOption.TIME}">
+    <input data-sort-type=${SortOption.TIME} id="sort-${SortOption.TIME}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-${SortOption.TIME}">
+    <label class="trip-sort__btn" for="sort-${SortOption.TIME}">Time</label>
   </div>
 
-  <div class="trip-sort__item  trip-sort__item--${SortType.PRICE}">
-    <input data-sort-type=${SortType.PRICE} id="sort-${SortType.PRICE}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-${SortType.PRICE}">
-    <label class="trip-sort__btn" for="sort-${SortType.PRICE}">Price</label>
+  <div class="trip-sort__item  trip-sort__item--${SortOption.PRICE}">
+    <input data-sort-type=${SortOption.PRICE} id="sort-${SortOption.PRICE}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-${SortOption.PRICE}">
+    <label class="trip-sort__btn" for="sort-${SortOption.PRICE}">Cost</label>
   </div>
 
-  <div class="trip-sort__item  trip-sort__item--${SortType.OFFER}">
-    <input data-sort-type=${SortType.OFFER} id="sort-${SortType.OFFER}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-${SortType.OFFER}" disabled>
-    <label class="trip-sort__btn" for="sort-${SortType.OFFER}">Offers</label>
+  <div class="trip-sort__item  trip-sort__item--${SortOption.OFFER}">
+    <input data-sort-type=${SortOption.OFFER} id="sort-${SortOption.OFFER}" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-${SortOption.OFFER}" disabled>
+    <label class="trip-sort__btn" for="sort-${SortOption.OFFER}">Offers</label>
   </div>
 </form>`
 );
 
+const _sortTypeTransformHandler = Symbol('sortTypeTransformHandler');
+
 export default class SortingView extends AbstractView {
-  get template () {
-    return createSortingTemplate();
+  constructor() {
+    super();
+    this[_sortTypeTransformHandler] = (evt) => {
+      if (evt.target.tagName === 'INPUT') {
+        this._callback.sortTypeTransform(evt.target.dataset.sortType);
+      }
+    };
   }
 
-  setSortTypeChangeHandler = (callback) => {
-    this._callback.sortTypeChange = callback;
-    this.element.addEventListener('click', this.#sortTypeChangeHandler);
-  };
+  setupSortOptionTransformHandler(callback) {
+    this._callback.sortTypeTransform = callback;
+    this.element.addEventListener('click', this[_sortTypeTransformHandler]);
+  }
 
-  #sortTypeChangeHandler = (evt) => {
-    if (evt.target.tagName !== 'INPUT') {
-      return;
-    }
-
-    this._callback.sortTypeChange(evt.target.dataset.sortType);
-  };
+  get template() {
+    return generateSortingTemplate();
+  }
 }

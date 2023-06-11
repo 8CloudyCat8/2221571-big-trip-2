@@ -1,26 +1,21 @@
 import { render } from './framework/render.js';
-import FiltersView from './view/filters.js';
+import FiltersComponent from './view/filters.js';
 import BoardPresenter from './presenter/board-presenter.js';
-import SiteMenuView from './view/site-menu.js';
+import SiteMenu from './view/menu.js';
 import PointsModel from './model/points-model.js';
-import { getPoints, getDestinations, getOffersByType } from './mock/point.js';
-import { generateFilter } from './mock/filter.js';
+import { getPoints, getDestinations, getOptionsByCategory } from './mock/point-generator.js';
+import { buildFilter } from './mock/filter-generator.js';
 
-const siteHeaderElement = document.querySelector('.trip-main');
-const siteMainElement = document.querySelector('.page-main');
-
-
-const points = getPoints();
-const offersByType = getOffersByType();
-const destinations = getDestinations();
+const headerElement = document.querySelector('.trip-main');
+const mainElement = document.querySelector('.page-main');
 
 const pointsModel = new PointsModel();
-pointsModel.init(points, destinations, offersByType);
-const boardPresenter = new BoardPresenter(siteMainElement.querySelector('.trip-events'), pointsModel);
+pointsModel.init(getPoints(), getDestinations(), getOptionsByCategory());
+
+const boardPresenter = new BoardPresenter(mainElement.querySelector('.trip-events'), pointsModel);
 boardPresenter.init();
 
-const filters = generateFilter(pointsModel.points);
+const filters = buildFilter(pointsModel.points);
 
-render(new FiltersView({filters}), siteHeaderElement.querySelector('.trip-controls__filters'));
-render(new SiteMenuView(), siteHeaderElement.querySelector('.trip-controls__navigation'));
-
+render(new FiltersComponent({ filters }), headerElement.querySelector('.trip-controls__filters'));
+render(new SiteMenu(), headerElement.querySelector('.trip-controls__navigation'));

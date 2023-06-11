@@ -1,23 +1,29 @@
 export default class PointsModel {
-  #points = [];
-  #destinations = [];
-  #offers = [];
+  #data = {
+    destinations: [],
+    points: [],
+    offers: []
+  };
 
   init(points, destinations, offers) {
-    this.#points = points;
-    this.#destinations = destinations;
-    this.#offers = offers;
+    this.#data.destinations = destinations;
+    this.#data.points = points;
+    this.#data.offers = offers;
   }
 
-  get points() {
-    return this.#points;
+  get data() {
+    return this.#data;
   }
 
   get destinations() {
-    return this.#destinations;
+    return this.#data.destinations;
+  }
+
+  get points() {
+    return this.#data.points;
   }
 
   get offers() {
-    return this.#offers;
+    return this.#data.offers;
   }
 }
