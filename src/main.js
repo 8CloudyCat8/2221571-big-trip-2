@@ -1,21 +1,44 @@
 import { render } from './framework/render.js';
-import FiltersComponent from './view/filters.js';
+import FilterPresenter from './presenter/filter-presenter.js';
 import BoardPresenter from './presenter/board-presenter.js';
-import SiteMenu from './view/menu.js';
+import SiteMenuView from './view/site-menu-view.js';
 import PointsModel from './model/points-model.js';
-import { getPoints, getDestinations, getOptionsByCategory } from './mock/point-generator.js';
-import { buildFilter } from './mock/filter-generator.js';
+import FilterModel from './model/filter-model.js';
+import NewPointButtonView from './view/new-point-button-view.js';
+import { getPoints, getDestinations, getOffersByType } from './mock/point.js';
 
-const headerElement = document.querySelector('.trip-main');
-const mainElement = document.querySelector('.page-main');
+const siteHeaderElement = document.querySelector('.trip-main');
+const siteMainElement = document.querySelector('.page-main');
+
+
+const points = getPoints();
+const offersByType = getOffersByType();
+const destinations = getDestinations();
 
 const pointsModel = new PointsModel();
-pointsModel.init(getPoints(), getDestinations(), getOptionsByCategory());
+pointsModel.init(points, destinations, offersByType);
 
-const boardPresenter = new BoardPresenter(mainElement.querySelector('.trip-events'), pointsModel);
+const filterModel = new FilterModel();
+const filterPresenter = new FilterPresenter(siteHeaderElement.querySelector('.trip-controls__filters'), filterModel, pointsModel);
+filterPresenter.init();
+
+const boardPresenter = new BoardPresenter(siteMainElement.querySelector('.trip-events'), pointsModel, filterModel);
 boardPresenter.init();
 
-const filters = buildFilter(pointsModel.points);
+const newPointButtonComponent = new NewPointButtonView();
 
-render(new FiltersComponent({ filters }), headerElement.querySelector('.trip-controls__filters'));
-render(new SiteMenu(), headerElement.querySelector('.trip-controls__navigation'));
+const handleNewPointFormClose = () => {
+  newPointButtonComponent.element.disabled = false;
+};
+
+const handleNewPointButtonClick = () => {
+  boardPresenter.createPoint(handleNewPointFormClose);
+  newPointButtonComponent.element.disabled = true;
+};
+
+render(newPointButtonComponent, siteHeaderElement);
+newPointButtonComponent.setClickHandler(handleNewPointButtonClick);
+
+
+render(new SiteMenuView(), siteHeaderElement.querySelector('.trip-controls__navigation'));
+
