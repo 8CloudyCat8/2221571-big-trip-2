@@ -1,19 +1,17 @@
-const AUTHORIZATION = 'Basic hIfpbpd204fpubd6';
-const END_POINT = 'https://18.ecmascript.pages.academy/big-trip';
-
-const SORT_TYPES_DISABLED = ['event', 'offer'];
+const API = 'https://18.ecmascript.pages.academy/big-trip';
+const VERIFICATION = 'Basic gjpgjpphjfhdg';
 
 const UserAction = {
-  UPDATE_POINT: 'UPDATE_POINT',
-  ADD_POINT: 'ADD_POINT',
-  DELETE_POINT: 'DELETE_POINT',
+  REMOVE_POINT: 'REMOVE_POINT',
+  EDIT_POINT: 'EDIT_POINT',
+  CREATE_POINT: 'CREATE_POINT'
 };
 
 const UpdateType = {
+  INIT: 'INIT',
   PATCH: 'PATCH',
   MINOR: 'MINOR',
-  MAJOR: 'MAJOR',
-  INIT: 'INIT'
+  MAJOR: 'MAJOR'
 };
 
 const FilterType = {
@@ -27,7 +25,7 @@ const SortType = {
   EVENT: 'event',
   TIME: 'time',
   PRICE: 'price',
-  OFFER: 'offer',
+  OFFER: 'offer'
 };
 
 const SortTypeDescription = {
@@ -35,45 +33,44 @@ const SortTypeDescription = {
   [SortType.EVENT]: 'Event',
   [SortType.TIME]: 'Time',
   [SortType.PRICE]: 'Price',
-  [SortType.OFFER]: 'Offer',
+  [SortType.OFFER]: 'Offer'
 };
 
 const PointType = {
-  TAXI: 'taxi',
-  BUS: 'bus',
-  TRAIN: 'train',
-  SHIP: 'ship',
   DRIVE: 'drive',
   FLIGHT: 'flight',
   CHECK_IN: 'check-in',
   SIGHTSEEING: 'sightseeing',
-  RESTAURANT: 'restaurant'
+  RESTAURANT: 'restaurant',
+  TAXI: 'taxi',
+  BUS: 'bus',
+  TRAIN: 'train',
+  SHIP: 'ship'
 };
 
 const PointTypeDescription = {
+  [PointType.FLIGHT]: 'Flight',
+  [PointType.CHECK_IN]: 'Check-in',
+  [PointType.SIGHTSEEING]: 'Sightseeing',
+  [PointType.RESTAURANT]: 'Restaurant',
   [PointType.TAXI]: 'Taxi',
   [PointType.BUS]: 'Bus',
   [PointType.TRAIN]: 'Train',
   [PointType.SHIP]: 'Ship',
-  [PointType.DRIVE]: 'Drive',
-  [PointType.FLIGHT]: 'Flight',
-  [PointType.CHECK_IN]: 'Check-in',
-  [PointType.SIGHTSEEING]: 'Sightseeing',
-  [PointType.RESTAURANT]: 'Restaurant'
+  [PointType.DRIVE]: 'Drive'
 };
 
 const ApiServiceResponseMethod = {
+  DELETE: 'DELETE',
   GET: 'GET',
   PUT: 'PUT',
-  POST: 'POST',
-  DELETE: 'DELETE'
+  POST: 'POST'
 };
 
 const TimeLimit = {
   LOWER_LIMIT: 350,
-  UPPER_LIMIT: 1000,
+  UPPER_LIMIT: 1000
 };
 
 
-export { UserAction, UpdateType, FilterType, SortType, SortTypeDescription, PointType, PointTypeDescription, SORT_TYPES_DISABLED,
-  ApiServiceResponseMethod, AUTHORIZATION, END_POINT, TimeLimit };
+export { UserAction, UpdateType, FilterType, SortType, SortTypeDescription, PointType, PointTypeDescription, ApiServiceResponseMethod, VERIFICATION, API, TimeLimit };

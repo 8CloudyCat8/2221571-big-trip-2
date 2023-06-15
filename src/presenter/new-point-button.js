@@ -3,15 +3,16 @@ import NewPointButtonView from '../view/new-point-button-view.js';
 
 export default class NewPointButtonPresenter {
   #newPointButtonContainer = null;
-  #destinationsModel = null;
+  #targetsModel = null;
+  #pointsModel = null;
   #offersModel = null;
   #boardPresenter = null;
-
   #newPointButtonComponent = null;
 
-  constructor({newPointButtonContainer, destinationsModel, offersModel, boardPresenter}) {
+  constructor({ newPointButtonContainer, targetsModel, pointsModel, offersModel, boardPresenter }) {
     this.#newPointButtonContainer = newPointButtonContainer;
-    this.#destinationsModel = destinationsModel;
+    this.#targetsModel = targetsModel;
+    this.#pointsModel = pointsModel;
     this.#offersModel = offersModel;
     this.#boardPresenter = boardPresenter;
   }
@@ -23,7 +24,13 @@ export default class NewPointButtonPresenter {
   renderNewPointButton = () => {
     render(this.#newPointButtonComponent, this.#newPointButtonContainer);
     this.#newPointButtonComponent.setClickHandler(this.#handleNewPointButtonClick);
-    if (this.#offersModel.offers.length === 0 || this.#destinationsModel.destinations.length === 0) {
+    if (
+      this.#offersModel.offers.length === 0 ||
+      this.#offersModel.isSuccessfulLoading === false ||
+      this.#targetsModel.destinations.length === 0 ||
+      this.#targetsModel.isSuccessfulLoading === false ||
+      this.#pointsModel.isSuccessfulLoading === false
+    ) {
       this.#newPointButtonComponent.element.disabled = true;
     }
   };
