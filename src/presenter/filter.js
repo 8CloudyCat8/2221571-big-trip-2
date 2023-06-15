@@ -1,19 +1,24 @@
 import { render, replace, remove } from '../framework/render.js';
 import FilterView from '../view/filter-view.js';
-import { filter } from '../utils/filter.js';
+import { filter } from '../utils/filters.js';
 import { FilterType, UpdateType } from '../const.js';
 
 export default class FilterPresenter {
   #filterContainer = null;
+
   #filterModel = null;
   #pointsModel = null;
+  #offersModel = null;
+  #targetsModel = null;
 
   #filterComponent = null;
 
-  constructor({filterContainer, pointsModel, filterModel}) {
+  constructor({filterContainer, pointsModel, targetsModel, offersModel, filterModel}) {
     this.#filterContainer = filterContainer;
     this.#filterModel = filterModel;
     this.#pointsModel = pointsModel;
+    this.#targetsModel = targetsModel;
+    this.#offersModel = offersModel;
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
@@ -58,6 +63,11 @@ export default class FilterPresenter {
   };
 
   #handleModelEvent = () => {
+    if (this.#offersModel.offers.length === 0 || this.#offersModel.isSuccessfulLoading === false ||
+      this.#targetsModel.destinations.length === 0 || this.#targetsModel.isSuccessfulLoading === false ||
+      this.#pointsModel.isSuccessfulLoading === false) {
+      return;
+    }
     this.init();
   };
 

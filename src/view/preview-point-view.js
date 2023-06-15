@@ -1,27 +1,29 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import {humanizePointDueDate, duration, getDate, getTime } from '../utils/point.js';
+import {humanizePointDate, getDuration, getDate, getTime } from '../utils/dates.js';
 import he from 'he';
 
 const renderOffers = (allOffers, checkedOffers) => {
   if (!allOffers) {
     return '';
   }
+
   let result = '';
-  allOffers.offers.forEach((offer) => {
+  for (const offer of allOffers.offers) {
     if (checkedOffers.includes(offer.id)) {
-      result = `${result}<li class="event__offer"><span class="event__offer-title">${offer.title}</span>&plus;&euro;&nbsp;<span class="event__offer-price">${offer.price}</span></li>`;
+      result += `<li class="event__offer"><span class="event__offer-title">${offer.title}</span>&plus;&euro;&nbsp;<span class="event__offer-price">${offer.price}</span></li>`;
     }
-  });
+  }
+
   return result;
 };
 
 const createPreviewPointTemplate = (point, destinations, allOffers) => {
-  const {basePrice, type, destination, isFavorite, dateFrom, dateTo, offers} = point;
-  const allPointTypeOffers = allOffers.find((offer) => offer.type === type);
-  const eventDuration = duration(dateFrom, dateTo);
-  const startDate = dateFrom !== null ? humanizePointDueDate(dateFrom) : '';
-  const endDate = dateTo !== null ? humanizePointDueDate(dateTo) : '';
+  const { destination, type, dateFrom, dateTo, basePrice, offers, isFavorite } = point;
   const destinationData = destinations.find((item) => item.id === destination);
+  const allPointTypeOffers = allOffers.find((offer) => offer.type === type);
+  const startDate = dateFrom ? humanizePointDate(dateFrom) : '';
+  const endDate = dateTo ? humanizePointDate(dateTo) : '';
+  const eventDuration = getDuration(dateFrom, dateTo);
   return (
     `<li class="trip-events__item">
       <div class="event">
@@ -60,9 +62,9 @@ const createPreviewPointTemplate = (point, destinations, allOffers) => {
 };
 
 export default class PreviewPointView extends AbstractView {
-  #point = null;
-  #destination = null;
-  #offers = null;
+  #point;
+  #destination;
+  #offers;
 
   constructor(point, destination, offers) {
     super();
@@ -71,19 +73,19 @@ export default class PreviewPointView extends AbstractView {
     this.#offers = offers;
   }
 
-  get template () {
+  get template() {
     return createPreviewPointTemplate(this.#point, this.#destination, this.#offers);
   }
 
-  setEditClickHandler = (callback) => {
+  setChangeClickHandler(callback) {
     this._callback.editClick = callback;
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
-  };
+  }
 
-  setFavoriteClickHandler = (callback) => {
+  setFavoriteClickHandler(callback) {
     this._callback.favoriteClick = callback;
     this.element.querySelector('.event__favorite-btn').addEventListener('click', this.#favoriteClickHandler);
-  };
+  }
 
   #editClickHandler = (evt) => {
     evt.preventDefault();
@@ -93,5 +95,5 @@ export default class PreviewPointView extends AbstractView {
   #favoriteClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.favoriteClick();
-  };
+  }
 }
