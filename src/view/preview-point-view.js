@@ -1,21 +1,23 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import {humanReadableDueDate, duration, getDate, getTime } from '../utils/time-utils.js';
+import {humanizePointDueDate, duration, getDate, getTime } from '../utils/point.js';
+import he from 'he';
 
-const renderOffers = (allOptions, checkedOffers) => {
-  return allOptions.reduce((result, offer) => {
+const renderOffers = (allOffers, checkedOffers) => {
+  let result = '';
+  allOffers.forEach((offer) => {
     if (checkedOffers.includes(offer.id)) {
-      result += `<li class="event__offer"><span class="event__offer-title">${offer.title}</span>&plus;&euro;&nbsp;<span class="event__offer-price">${offer.price}</span></li>`;
+      result = `${result}<li class="event__offer"><span class="event__offer-title">${offer.title}</span>&plus;&euro;&nbsp;<span class="event__offer-price">${offer.price}</span></li>`;
     }
-    return result;
-  }, '');
+  });
+  return result;
 };
 
-const generatePreviewPointTemplate = (point, destinations, offers) => {
+const createPreviewPointTemplate = (point, destinations, offers) => {
   const {basePrice, type, destinationId, isFavorite, dateFrom, dateTo, offerIds} = point;
   const allPointTypeOffers = offers.find((offer) => offer.type === type);
   const eventDuration = duration(dateFrom, dateTo);
-  const startDate = dateFrom !== null ? humanReadableDueDate(dateFrom) : '';
-  const endDate = dateTo !== null ? humanReadableDueDate(dateTo) : '';
+  const startDate = dateFrom !== null ? humanizePointDueDate(dateFrom) : '';
+  const endDate = dateTo !== null ? humanizePointDueDate(dateTo) : '';
   return (
     `<li class="trip-events__item">
       <div class="event">
@@ -23,7 +25,7 @@ const generatePreviewPointTemplate = (point, destinations, offers) => {
         <div class="event__type">
         <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event ${type} icon">
       </div>
-      <h3 class="event__title">${type} ${ destinations[destinationId].name}</h3>
+      <h3 class="event__title">${type} ${he.encode(destinations[destinationId].name)}</h3>
       <div class="event__schedule">
         <p class="event__time">
         <time class="event__start-time" datetime="${dateFrom}">${(startDate === endDate) ? getTime(dateFrom) : startDate}</time>
@@ -54,9 +56,9 @@ const generatePreviewPointTemplate = (point, destinations, offers) => {
 };
 
 export default class PreviewPointView extends AbstractView {
-  #point;
-  #destination;
-  #offers;
+  #point = null;
+  #destination = null;
+  #offers = null;
 
   constructor(point, destination, offers) {
     super();
@@ -65,20 +67,27 @@ export default class PreviewPointView extends AbstractView {
     this.#offers = offers;
   }
 
-  get template() {
-    return generatePreviewPointTemplate(this.#point, this.#destination, this.#offers);
+  get template () {
+    return createPreviewPointTemplate(this.#point, this.#destination, this.#offers);
   }
 
   setEditClickHandler = (callback) => {
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
-      callback();
-    });
+    this._callback.editClick = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
   };
 
   setFavoriteClickHandler = (callback) => {
-    this.element.querySelector('.event__favorite-btn').addEventListener('click', () => {
-      callback();
-    });
+    this._callback.favoriteClick = callback;
+    this.element.querySelector('.event__favorite-btn').addEventListener('click', this.#favoriteClickHandler);
+  };
+
+  #editClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.editClick();
+  };
+
+  #favoriteClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.favoriteClick();
   };
 }
-
