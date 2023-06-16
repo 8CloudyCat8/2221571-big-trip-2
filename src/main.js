@@ -7,9 +7,9 @@ import DestinationsModel from './model/destinations.js';
 import PlacesApiService from './api-service/places-api-service.js';
 import TravelsApiService from './api-service/travels-api-service.js';
 import DealsApiService from './api-service/deals-api-service.js';
+import NewPointButtonPresenter from './presenter/new-point-button.js';
 import FilterPresenter from './presenter/filter.js';
 import BoardPresenter from './presenter/board.js';
-import NewPointButtonPresenter from './presenter/new-point-button.js';
 import { API, VERIFICATION } from './const.js';
 
 const HeaderElement = document.querySelector('.trip-main');
