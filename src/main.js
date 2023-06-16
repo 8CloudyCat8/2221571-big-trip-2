@@ -15,9 +15,9 @@ import { API, VERIFICATION } from './const.js';
 const siteHeaderElement = document.querySelector('.trip-main');
 const siteMainElement = document.querySelector('.page-main');
 
+const offersModel = new OffersModel(new TravelsApiService(API, VERIFICATION));
 const pointsModel = new PointsModel(new PlacesApiService(API, VERIFICATION));
 const destinationsModel = new DestinationsModel(new DealsApiService(API, VERIFICATION));
-const offersModel = new OffersModel(new TravelsApiService(API, VERIFICATION));
 
 const filterModel = new FilterModel();
 const filterPresenter = new FilterPresenter({
