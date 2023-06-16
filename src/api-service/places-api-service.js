@@ -1,7 +1,7 @@
 import ApiService from '../framework/api-service.js';
-import { ApiServiceResponseMethod } from '../const.js';
+import { ApiServiceResponseAction } from '../const.js';
 
-export default class PointsApiService extends ApiService {
+export default class PlacesApiService extends ApiService {
   get points() {
     return this._load({url: 'points'})
       .then(ApiService.parseResponse);
@@ -10,7 +10,7 @@ export default class PointsApiService extends ApiService {
   updatePoint = async (point) => {
     const response = await this._load({
       url: `points/${point.id}`,
-      method: ApiServiceResponseMethod.PUT,
+      method: ApiServiceResponseAction.PUT,
       body: JSON.stringify(this.#adaptToServer(point)),
       headers: new Headers({'Content-Type': 'application/json'}),
     });
@@ -23,7 +23,7 @@ export default class PointsApiService extends ApiService {
   addPoint = async (point) => {
     const response = await this._load({
       url: 'points',
-      method: ApiServiceResponseMethod.POST,
+      method: ApiServiceResponseAction.POST,
       body: JSON.stringify(this.#adaptToServer(point)),
       headers: new Headers({'Content-Type': 'application/json'}),
     });
@@ -36,7 +36,7 @@ export default class PointsApiService extends ApiService {
   deletePoint = async (point) => {
     const response = await this._load({
       url: `points/${point.id}`,
-      method: ApiServiceResponseMethod.DELETE,
+      method: ApiServiceResponseAction.DELETE,
     });
 
     return response;

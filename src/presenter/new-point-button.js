@@ -6,10 +6,14 @@ export default class NewPointButtonPresenter {
   #destinationsModel = null;
   #offersModel = null;
   #boardPresenter = null;
-
   #newPointButtonComponent = null;
 
-  constructor({newPointButtonContainer, destinationsModel, offersModel, boardPresenter}) {
+  constructor({
+    newPointButtonContainer,
+    destinationsModel,
+    offersModel,
+    boardPresenter
+  }) {
     this.#newPointButtonContainer = newPointButtonContainer;
     this.#destinationsModel = destinationsModel;
     this.#offersModel = offersModel;
@@ -18,15 +22,17 @@ export default class NewPointButtonPresenter {
 
   init() {
     this.#newPointButtonComponent = new NewPointButtonView();
+    this.renderNewPointButton();
   }
 
-  renderNewPointButton = () => {
+  renderNewPointButton() {
     render(this.#newPointButtonComponent, this.#newPointButtonContainer);
     this.#newPointButtonComponent.setClickHandler(this.#handleNewPointButtonClick);
-    if (this.#offersModel.offers.length === 0 || this.#destinationsModel.destinations.length === 0) {
-      this.#newPointButtonComponent.element.disabled = true;
-    }
-  };
+
+    const offersExist = this.#offersModel.offers.length > 0;
+    const destinationsExist = this.#destinationsModel.destinations.length > 0;
+    this.#newPointButtonComponent.element.disabled = !(offersExist && destinationsExist);
+  }
 
   #handleNewPointFormClose = () => {
     this.#newPointButtonComponent.element.disabled = false;

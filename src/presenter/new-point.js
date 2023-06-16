@@ -3,16 +3,14 @@ import PointView from '../view/point-view.js';
 import { UserAction, UpdateType } from '../const.js';
 
 export default class PointNewPresenter {
+  #destinationsModel = null;
+  #offersModel = null;
+  #destinations = null;
+  #offers = null;
   #pointListContainer = null;
   #creatingPointComponent = null;
   #changeData = null;
   #destroyCallback = null;
-
-  #destinationsModel = null;
-  #offersModel = null;
-
-  #destinations = null;
-  #offers = null;
 
   constructor({pointListContainer, changeData, destinationsModel, offersModel}) {
     this.#pointListContainer = pointListContainer;
@@ -88,7 +86,7 @@ export default class PointNewPresenter {
 
   #handleFormSubmit = (point) => {
     this.#changeData(
-      UserAction.ADD_POINT,
+      UserAction.CREATE_POINT,
       UpdateType.MINOR,
       point,
     );

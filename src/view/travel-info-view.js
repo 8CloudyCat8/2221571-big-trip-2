@@ -1,26 +1,29 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import {humanizePointDueDate } from '../utils/point.js';
+import {humanizePointDueDate } from '../utils/dates.js';
 
 const renderRouteTrip = (points, destinations) => {
   if (points.length === 0) {
     return '';
   }
-  const routeWithoutRepeats = [points[0].destination];
-  for (let i = 1; i < points.length; i++) {
-    if (points[i].destination !== points[i-1].destination) {
-      routeWithoutRepeats.push(points[i].destination);
+
+  const routeWithoutRepeats = points.reduce((route, point, index) => {
+    if (index === 0 || point.destination !== points[index - 1].destination) {
+      route.push(point.destination);
     }
-  }
+    return route;
+  }, []);
 
   if (routeWithoutRepeats.length > 3) {
-    const startPoint = destinations.find((item) => item.id === routeWithoutRepeats[0]);
-    const endPoint = destinations.find((item) => item.id === routeWithoutRepeats[routeWithoutRepeats.length - 1]);
+    const startPoint = destinations.find(item => item.id === routeWithoutRepeats[0]);
+    const endPoint = destinations.find(item => item.id === routeWithoutRepeats[routeWithoutRepeats.length - 1]);
     return `${startPoint.name} &mdash; ... &mdash; ${endPoint.name}`;
   }
 
-  return routeWithoutRepeats.map((destination) => `${destinations.find((item) => item.id === destination).name}`).join(' &mdash; ');
-
+  return routeWithoutRepeats
+    .map(destination => destinations.find(item => item.id === destination).name)
+    .join(' &mdash; ');
 };
+
 const renderDatesTrip = (points) => {
   if (points.length === 0) {
     return '';

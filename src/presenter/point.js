@@ -4,8 +4,8 @@ import PointView from '../view/point-view.js';
 import { UserAction, UpdateType } from '../const.js';
 
 const Mode = {
-  PREVIEW: 'preview',
   EDITING: 'editing',
+  PREVIEW: 'preview',
 };
 
 export default class PointPresenter {
@@ -14,13 +14,10 @@ export default class PointPresenter {
   #editingPointComponent = null;
   #destinationsModel = null;
   #offersModel = null;
-
   #destinations = null;
   #offers = null;
-
   #changeData = null;
   #changeMode = null;
-
   #point = null;
   #mode = Mode.PREVIEW;
 
@@ -38,7 +35,7 @@ export default class PointPresenter {
     this.#offers = [...this.#offersModel.offers];
 
     const prevPreviewPointComponent = this.#previewPointComponent;
-    const prevEditingPointComponent =  this.#editingPointComponent;
+    const prevModifyingPointComponent =  this.#editingPointComponent;
 
     this.#previewPointComponent = new PreviewPointView(point, this.#destinations, this.#offers);
     this.#editingPointComponent = new PointView({
@@ -54,7 +51,7 @@ export default class PointPresenter {
     this.#editingPointComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#editingPointComponent.setResetClickHandler(this.#handleResetClick);
 
-    if (prevPreviewPointComponent === null || prevEditingPointComponent === null) {
+    if (prevPreviewPointComponent === null || prevModifyingPointComponent === null) {
       render(this.#previewPointComponent, this.#pointListContainer);
       return;
     }
@@ -64,13 +61,13 @@ export default class PointPresenter {
         replace(this.#previewPointComponent, prevPreviewPointComponent);
         break;
       case Mode.EDITING:
-        replace(this.#previewPointComponent, prevEditingPointComponent);
+        replace(this.#previewPointComponent, prevModifyingPointComponent);
         this.#mode = Mode.PREVIEW;
         break;
     }
 
     remove(prevPreviewPointComponent);
-    remove(prevEditingPointComponent);
+    remove(prevModifyingPointComponent);
   }
 
   destroy = () => {
@@ -81,7 +78,7 @@ export default class PointPresenter {
   resetView = () => {
     if (this.#mode !== Mode.PREVIEW) {
       this.#editingPointComponent.reset(this.#point);
-      this.#replaceEditingPointToPreviewPoint();
+      this.#replaceModifyingPointToPreviewPoint();
     }
   };
 
@@ -120,14 +117,14 @@ export default class PointPresenter {
     });
   };
 
-  #replacePreviewPointToEditingPoint = () => {
+  #replacePreviewPointToModifyingPoint = () => {
     replace(this.#editingPointComponent, this.#previewPointComponent);
     document.addEventListener('keydown', this.#escKeyDownHandler);
     this.#changeMode();
     this.#mode = Mode.EDITING;
   };
 
-  #replaceEditingPointToPreviewPoint = () => {
+  #replaceModifyingPointToPreviewPoint = () => {
     replace(this.#previewPointComponent, this.#editingPointComponent);
     document.removeEventListener('keydown', this.#escKeyDownHandler);
     this.#mode = Mode.PREVIEW;
@@ -142,14 +139,14 @@ export default class PointPresenter {
 
   #handleFavoriteClick = () => {
     this.#changeData(
-      UserAction.UPDATE_POINT,
+      UserAction.EDIT_POINT,
       UpdateType.PATCH,
       {...this.#point, isFavorite: !this.#point.isFavorite},
     );
   };
 
   #handleEditClick = () => {
-    this.#replacePreviewPointToEditingPoint();
+    this.#replacePreviewPointToModifyingPoint();
   };
 
   #handlePreviewClick = () => {
@@ -158,7 +155,7 @@ export default class PointPresenter {
 
   #handleFormSubmit = (point) => {
     this.#changeData(
-      UserAction.UPDATE_POINT,
+      UserAction.EDIT_POINT,
       UpdateType.MINOR,
       point,
     );
@@ -166,7 +163,7 @@ export default class PointPresenter {
 
   #handleResetClick = (point) => {
     this.#changeData(
-      UserAction.DELETE_POINT,
+      UserAction.REMOVE_POINT,
       UpdateType.MINOR,
       point,
     );

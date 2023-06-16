@@ -1,6 +1,6 @@
 import { render, replace, remove } from '../framework/render.js';
 import FilterView from '../view/filter-view.js';
-import { filter } from '../utils/filter.js';
+import { filter } from '../utils/filters.js';
 import { FilterType, UpdateType } from '../const.js';
 
 export default class FilterPresenter {
@@ -10,7 +10,11 @@ export default class FilterPresenter {
 
   #filterComponent = null;
 
-  constructor({filterContainer, pointsModel, filterModel}) {
+  constructor({
+    filterContainer,
+    pointsModel,
+    filterModel
+  }) {
     this.#filterContainer = filterContainer;
     this.#filterModel = filterModel;
     this.#pointsModel = pointsModel;
@@ -21,27 +25,20 @@ export default class FilterPresenter {
 
   get filters() {
     const points = this.#pointsModel.points;
+    const filterCounts = {
+      [FilterType.EVERYTHING]: filter[FilterType.EVERYTHING](points).length,
+      [FilterType.PAST]: filter[FilterType.PAST](points).length,
+      [FilterType.FUTURE]: filter[FilterType.FUTURE](points).length,
+    };
 
-    return [
-      {
-        type: FilterType.EVERYTHING,
-        name: FilterType.EVERYTHING,
-        count: filter[FilterType.EVERYTHING](points).length,
-      },
-      {
-        type: FilterType.PAST,
-        name: FilterType.PAST,
-        count: filter[FilterType.PAST](points).length,
-      },
-      {
-        type: FilterType.FUTURE,
-        name: FilterType.FUTURE,
-        count: filter[FilterType.FUTURE](points).length,
-      },
-    ];
+    return Object.entries(filterCounts).map(([type, count]) => ({
+      type,
+      name: type,
+      count,
+    }));
   }
 
-  init = () => {
+  init() {
     const filters = this.filters;
     const prevFilterComponent = this.#filterComponent;
 
@@ -50,21 +47,16 @@ export default class FilterPresenter {
 
     if (prevFilterComponent === null) {
       render(this.#filterComponent, this.#filterContainer);
-      return;
+    } else {
+      replace(this.#filterComponent, prevFilterComponent);
+      remove(prevFilterComponent);
     }
+  }
 
-    replace(this.#filterComponent, prevFilterComponent);
-    remove(prevFilterComponent);
-  };
-
-  #handleModelEvent = () => {
-    this.init();
-  };
+  #handleModelEvent = () => this.init();
 
   #handleFilterTypeChange = (filterType) => {
-    if (this.#filterModel.filter === filterType) {
-      return;
-    }
+    if (this.#filterModel.filter === filterType) return;
 
     this.#filterModel.setFilter(UpdateType.MAJOR, filterType);
   };

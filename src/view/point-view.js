@@ -1,5 +1,5 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import { getDateTime } from '../utils/point.js';
+import { getDateTime } from '../utils/dates.js';
 import { PointType, PointTypeDescription } from '../const.js';
 import dayjs from 'dayjs';
 import flatpickr from 'flatpickr';
@@ -69,7 +69,7 @@ const renderDestinationContainer = (destination) => {
   return '';
 };
 
-const renderEditingPointDateTemplate = (dateFrom, dateTo, isDisabled) => (
+const renderModifyingPointDateTemplate = (dateFrom, dateTo, isDisabled) => (
   `<div class="event__field-group  event__field-group--time">
     <label class="visually-hidden" for="event-start-time-1">From</label>
     <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${getDateTime(dateFrom)}" ${isDisabled ? 'disabled' : ''}>
@@ -79,7 +79,7 @@ const renderEditingPointDateTemplate = (dateFrom, dateTo, isDisabled) => (
   </div>`
 );
 
-const renderEditingPointTypeTemplate = (currentType, isDisabled) => Object.values(PointType).map((type) => `<div class="event__type-item">
+const renderModifyingPointTypeTemplate = (currentType, isDisabled) => Object.values(PointType).map((type) => `<div class="event__type-item">
 <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${currentType === type ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}>
 <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${PointTypeDescription[type]}</label>
 </div>`).join('');
@@ -87,7 +87,7 @@ const renderEditingPointTypeTemplate = (currentType, isDisabled) => Object.value
 const renderResetButtonTemplate = (isNewPoint, isDisabled, isDeleting) => isNewPoint ? `<button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>Cancel</button>` : `<button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${isDeleting ? 'Deleting...' : 'Delete'}</button>
   <button class="event__rollup-btn" type="button">`;
 
-const createEditingPointTemplate = (point, destinations, allOffers, isNewPoint) => {
+const createModifyingPointTemplate = (point, destinations, allOffers, isNewPoint) => {
   const {basePrice, type, destination, dateFrom, dateTo, offers, isDisabled, isSaving, isDeleting} = point;
   const allPointTypeOffers = allOffers.find((offer) => offer.type === type);
   const destinationData = destinations.find((item) => item.id === destination);
@@ -105,7 +105,7 @@ const createEditingPointTemplate = (point, destinations, allOffers, isNewPoint) 
           <div class="event__type-list">
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Event type</legend>
-              ${renderEditingPointTypeTemplate(type, isDisabled)}
+              ${renderModifyingPointTypeTemplate(type, isDisabled)}
             </fieldset>
           </div>
         </div>
@@ -120,7 +120,7 @@ const createEditingPointTemplate = (point, destinations, allOffers, isNewPoint) 
           </datalist>
         </div>
 
-        ${renderEditingPointDateTemplate(dateFrom, dateTo, isDisabled)}
+        ${renderModifyingPointDateTemplate(dateFrom, dateTo, isDisabled)}
 
         <div class="event__field-group  event__field-group--price">
           <label class="event__label" for="event-price-1">
@@ -175,7 +175,7 @@ export default class PointView extends AbstractStatefulView {
   };
 
   get template () {
-    return createEditingPointTemplate(this._state, this.#destination, this.#offers, this.#isNewPoint);
+    return createModifyingPointTemplate(this._state, this.#destination, this.#offers, this.#isNewPoint);
   }
 
   setPreviewClickHandler = (callback) => {
