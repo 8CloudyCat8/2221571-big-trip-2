@@ -3,37 +3,36 @@ import NewPointButtonView from '../view/new-point-button-view.js';
 
 export default class NewPointButtonPresenter {
   #newPointButtonContainer = null;
-  #targetsModel = null;
-  #pointsModel = null;
+  #destinationsModel = null;
   #offersModel = null;
   #boardPresenter = null;
   #newPointButtonComponent = null;
 
-  constructor({ newPointButtonContainer, targetsModel, pointsModel, offersModel, boardPresenter }) {
+  constructor({
+    newPointButtonContainer,
+    destinationsModel,
+    offersModel,
+    boardPresenter
+  }) {
     this.#newPointButtonContainer = newPointButtonContainer;
-    this.#targetsModel = targetsModel;
-    this.#pointsModel = pointsModel;
+    this.#destinationsModel = destinationsModel;
     this.#offersModel = offersModel;
     this.#boardPresenter = boardPresenter;
   }
 
   init() {
     this.#newPointButtonComponent = new NewPointButtonView();
+    this.renderNewPointButton();
   }
 
-  renderNewPointButton = () => {
+  renderNewPointButton() {
     render(this.#newPointButtonComponent, this.#newPointButtonContainer);
     this.#newPointButtonComponent.setClickHandler(this.#handleNewPointButtonClick);
-    if (
-      this.#offersModel.offers.length === 0 ||
-      this.#offersModel.isSuccessfulLoading === false ||
-      this.#targetsModel.destinations.length === 0 ||
-      this.#targetsModel.isSuccessfulLoading === false ||
-      this.#pointsModel.isSuccessfulLoading === false
-    ) {
-      this.#newPointButtonComponent.element.disabled = true;
-    }
-  };
+
+    const offersExist = this.#offersModel.offers.length > 0;
+    const destinationsExist = this.#destinationsModel.destinations.length > 0;
+    this.#newPointButtonComponent.element.disabled = !(offersExist && destinationsExist);
+  }
 
   #handleNewPointFormClose = () => {
     this.#newPointButtonComponent.element.disabled = false;

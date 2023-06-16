@@ -3,48 +3,62 @@ import PointView from '../view/point-view.js';
 import { UserAction, UpdateType } from '../const.js';
 
 export default class PointNewPresenter {
-  #pointListContainer = null;
-  #changeData = null;
-  #destroyCallback = null;
-  #targetsModel = null;
+  #destinationsModel = null;
   #offersModel = null;
   #destinations = null;
   #offers = null;
+  #pointListContainer = null;
   #creatingPointComponent = null;
+  #changeData = null;
+  #destroyCallback = null;
 
-  constructor({ pointListContainer, changeData, targetsModel, offersModel }) {
-    this.#targetsModel = targetsModel;
-    this.#offersModel = offersModel;
+  constructor({pointListContainer, changeData, destinationsModel, offersModel}) {
     this.#pointListContainer = pointListContainer;
     this.#changeData = changeData;
+    this.#destinationsModel = destinationsModel;
+    this.#offersModel = offersModel;
   }
 
   init = (callback) => {
     this.#destroyCallback = callback;
-    if (this.#creatingPointComponent !== null) return;
-    this.#destinations = [...this.#targetsModel.destinations];
+
+    if (this.#creatingPointComponent !== null) {
+      return;
+    }
+    this.#destinations = [...this.#destinationsModel.destinations];
     this.#offers = [...this.#offersModel.offers];
+
     this.#creatingPointComponent = new PointView({
-      destinations: this.#destinations,
+      destination: this.#destinations,
       offers: this.#offers,
       isNewPoint: true
     });
     this.#creatingPointComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#creatingPointComponent.setResetClickHandler(this.#handleResetClick);
+
     render(this.#creatingPointComponent, this.#pointListContainer, RenderPosition.AFTERBEGIN);
-    document.addEventListener('keydown', this.#escapeKeyDownHandler);
+
+    document.addEventListener('keydown', this.#escKeyDownHandler);
   };
 
   destroy = () => {
-    if (this.#creatingPointComponent === null) return;
+    if (this.#creatingPointComponent === null) {
+      return;
+    }
+
     this.#destroyCallback?.();
+
     remove(this.#creatingPointComponent);
     this.#creatingPointComponent = null;
-    document.removeEventListener('keydown', this.#escapeKeyDownHandler);
+
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
   };
 
   setSaving = () => {
-    this.#creatingPointComponent.updateElement({ isSaving: true, isDisabled: true });
+    this.#creatingPointComponent.updateElement({
+      isDisabled: true,
+      isSaving: true,
+    });
   };
 
   setAborting = () => {
@@ -53,13 +67,13 @@ export default class PointNewPresenter {
 
   #resetFormState = () => {
     this.#creatingPointComponent.updateElement({
-      isDeleting: false,
       isDisabled: false,
-      isSaving: false
+      isSaving: false,
+      isDeleting: false,
     });
   };
 
-  #escapeKeyDownHandler = (evt) => {
+  #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
       this.destroy();
@@ -71,6 +85,10 @@ export default class PointNewPresenter {
   };
 
   #handleFormSubmit = (point) => {
-    this.#changeData(UserAction.CREATE_POINT, UpdateType.MINOR, point);
+    this.#changeData(
+      UserAction.CREATE_POINT,
+      UpdateType.MINOR,
+      point,
+    );
   };
 }

@@ -1,52 +1,61 @@
 import ApiService from '../framework/api-service.js';
-import { ApiServiceResponseMethod } from '../const.js';
+import { ApiServiceResponseAction } from '../const.js';
 
 export default class PlacesApiService extends ApiService {
+  get points() {
+    return this._load({url: 'points'})
+      .then(ApiService.parseResponse);
+  }
+
+  updatePoint = async (point) => {
+    const response = await this._load({
+      url: `points/${point.id}`,
+      method: ApiServiceResponseAction.PUT,
+      body: JSON.stringify(this.#adaptToServer(point)),
+      headers: new Headers({'Content-Type': 'application/json'}),
+    });
+
+    const parsedResponse = await ApiService.parseResponse(response);
+
+    return parsedResponse;
+  };
+
+  addPoint = async (point) => {
+    const response = await this._load({
+      url: 'points',
+      method: ApiServiceResponseAction.POST,
+      body: JSON.stringify(this.#adaptToServer(point)),
+      headers: new Headers({'Content-Type': 'application/json'}),
+    });
+
+    const parsedResponse = await ApiService.parseResponse(response);
+
+    return parsedResponse;
+  };
+
+  deletePoint = async (point) => {
+    const response = await this._load({
+      url: `points/${point.id}`,
+      method: ApiServiceResponseAction.DELETE,
+    });
+
+    return response;
+  };
+
   #adaptToServer = (point) => {
-    const adaptedPoint = {
-      ...point,
+    const adaptedPoint = {...point,
       'base_price': point.basePrice,
       'date_from': point.dateFrom instanceof Date ? point.dateFrom.toISOString() : null,
       'date_to': point.dateTo instanceof Date ? point.dateTo.toISOString() : null,
       'is_favorite': point.isFavorite,
     };
 
+    // Ненужные ключи мы удаляем
     delete adaptedPoint.basePrice;
     delete adaptedPoint.dateFrom;
     delete adaptedPoint.dateTo;
     delete adaptedPoint.isFavorite;
 
     return adaptedPoint;
-  };
-
-  async _loadPoint(url, method = ApiServiceResponseMethod.GET, body = null) {
-    const options = {
-      method: method,
-      headers: new Headers({'Content-Type': 'application/json'}),
-    };
-
-    if (body) {
-      options.body = JSON.stringify(body);
-    }
-
-    const response = await this._load({ url, ...options });
-
-    return ApiService.parseResponse(response);
-  }
-
-  get points() {
-    return this._loadPoint('points');
-  }
-
-  updatePoint = async (point) => {
-    return this._loadPoint(`points/${point.id}`, ApiServiceResponseMethod.PUT, this.#adaptToServer(point));
-  };
-
-  addPoint = async (point) => {
-    return this._loadPoint('points', ApiServiceResponseMethod.POST, this.#adaptToServer(point));
-  };
-
-  deletePoint = async (point) => {
-    return this._loadPoint(`points/${point.id}`, ApiServiceResponseMethod.DELETE);
   };
 }
