@@ -6,9 +6,9 @@ const sortPricePoint = (pointA, pointB) => pointB.basePrice - pointA.basePrice;
 const sortDayPoint = (pointA, pointB) => dayjs(pointA.dateFrom).diff(dayjs(pointB.dateFrom));
 
 const sortTimePoint = (pointA, pointB) => {
-  const timePointFirst = dayjs(pointA.dateTo).diff(dayjs(pointA.dateFrom));
-  const timePointSecond = dayjs(pointB.dateTo).diff(dayjs(pointB.dateFrom));
-  return timePointSecond - timePointFirst;
+  const timePointA = dayjs(pointA.dateTo).diff(dayjs(pointA.dateFrom));
+  const timePointB = dayjs(pointB.dateTo).diff(dayjs(pointB.dateFrom));
+  return timePointB - timePointA;
 };
 
 const sorting = {
@@ -18,4 +18,3 @@ const sorting = {
 };
 
 export { sorting };
-

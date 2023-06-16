@@ -1,10 +1,12 @@
 const API = 'https://18.ecmascript.pages.academy/big-trip';
 const VERIFICATION = 'Basic gjpgjpphjfhdg';
 
+const DISABLED_SORT_TYPES = ['event', 'offer'];
+
 const UserAction = {
-  REMOVE_POINT: 'REMOVE_POINT',
   EDIT_POINT: 'EDIT_POINT',
-  CREATE_POINT: 'CREATE_POINT'
+  CREATE_POINT: 'CREATE_POINT',
+  REMOVE_POINT: 'REMOVE_POINT'
 };
 
 const UpdateType = {
@@ -60,7 +62,7 @@ const PointTypeDescription = {
   [PointType.DRIVE]: 'Drive'
 };
 
-const ApiServiceResponseMethod = {
+const ApiServiceResponseAction = {
   DELETE: 'DELETE',
   GET: 'GET',
   PUT: 'PUT',
@@ -73,4 +75,5 @@ const TimeLimit = {
 };
 
 
-export { UserAction, UpdateType, FilterType, SortType, SortTypeDescription, PointType, PointTypeDescription, ApiServiceResponseMethod, VERIFICATION, API, TimeLimit };
+export { UserAction, UpdateType, FilterType, SortType, SortTypeDescription, PointType, PointTypeDescription, DISABLED_SORT_TYPES,
+  ApiServiceResponseAction, VERIFICATION, API, TimeLimit };
